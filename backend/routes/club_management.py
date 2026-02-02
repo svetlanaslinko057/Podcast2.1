@@ -102,6 +102,7 @@ async def get_club_settings():
     Get club settings
     Public endpoint - anyone can see club info
     """
+    db = get_database()
     club = await db.club_settings.find_one({})
     if not club:
         raise HTTPException(status_code=404, detail="Club not initialized")
