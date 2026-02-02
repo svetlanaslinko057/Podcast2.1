@@ -280,14 +280,14 @@ class FOMOPodcastsAPITester:
         
         # Core API tests
         tests = [
-            self.test_api_health,
-            self.test_club_settings,
+            self.test_api_root,
+            self.test_health_check,
             self.test_podcasts_list,
             self.test_users_list,
-            self.test_create_live_session,
-            self.test_get_live_sessions,
+            self.test_club_settings,
             self.test_livekit_token_generation,
-            self.test_additional_endpoints
+            self.test_user_badges,
+            self.test_user_xp_progress
         ]
         
         for test in tests:
