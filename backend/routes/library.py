@@ -2,10 +2,10 @@
 Library Routes - Save/Like functionality
 """
 from fastapi import APIRouter, Form, HTTPException
-from core.database import get_db, get_gridfs
 import uuid
-from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
+
+from core.database import get_db
 
 router = APIRouter(prefix="/library", tags=["library"])
 

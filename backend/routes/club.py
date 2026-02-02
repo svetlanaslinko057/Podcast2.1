@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
 from uuid import uuid4
-from database import get_database as get_db
+from core.database import get_db
 
 router = APIRouter(prefix="/club", tags=["club"])
 

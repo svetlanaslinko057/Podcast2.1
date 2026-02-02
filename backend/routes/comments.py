@@ -2,14 +2,12 @@
 Comments Routes - Handle podcast comments, replies, reactions and discussions
 """
 from fastapi import APIRouter, HTTPException, Form, Body
-from core.database import get_db, get_gridfs
 from typing import Optional, List
-from core.database import get_db, get_gridfs
 from pydantic import BaseModel
-from core.database import get_db, get_gridfs
 import uuid
-from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
+
+from core.database import get_db
 
 router = APIRouter(prefix="/podcasts", tags=["comments"])
 
