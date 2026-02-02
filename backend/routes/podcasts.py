@@ -180,7 +180,7 @@ async def delete_podcast(podcast_id: str):
     
     # Delete audio file from GridFS
     if podcast.get("audio_file_id"):
-        fs = await get_fs()
+        fs = get_gridfs()
         try:
             await fs.delete(podcast["audio_file_id"])
         except Exception:
@@ -210,7 +210,7 @@ async def delete_podcast(podcast_id: str):
 async def stream_audio(podcast_id: str):
     """Stream audio file"""
     db = await get_db()
-    fs = await get_fs()
+    fs = get_gridfs()
     
     podcast = await db.podcasts.find_one({"id": podcast_id})
     if not podcast or not podcast.get("audio_file_id"):
@@ -244,7 +244,7 @@ async def upload_audio(
 ):
     """Upload audio file for podcast"""
     db = await get_db()
-    fs = await get_fs()
+    fs = get_gridfs()
     
     podcast = await db.podcasts.find_one({"id": podcast_id})
     if not podcast:
