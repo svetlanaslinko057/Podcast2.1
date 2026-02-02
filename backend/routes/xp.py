@@ -400,6 +400,7 @@ async def get_user_progress(user_id: str):
     Get user progress info (XP, level, next level requirements)
     Auto-creates user if not found
     """
+    db = get_database()
     user = await db.users.find_one({"id": user_id})
     
     # Auto-create user if not found
