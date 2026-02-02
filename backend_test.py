@@ -34,22 +34,49 @@ class FOMOPodcastsAPITester:
             self.failed_tests.append(f"{name}: {details}")
         print()
 
-    def test_api_health(self):
-        """Test GET /api/ - API health check"""
+    def test_api_root(self):
+        """Test GET /api/ - корневой endpoint (версия 7.0)"""
         try:
             response = requests.get(f"{self.api_url}/", timeout=10)
             success = response.status_code == 200
             
             if success:
                 data = response.json()
-                details = f"Status: {response.status_code}, Message: {data.get('message', 'N/A')}"
+                version = data.get('version', 'N/A')
+                message = data.get('message', 'N/A')
+                details = f"Status: {response.status_code}, Version: {version}, Message: {message}"
+                # Check if version is 7.0
+                if "7.0" not in str(version):
+                    success = False
+                    details += " - WARNING: Version is not 7.0"
             else:
                 details = f"Status: {response.status_code}, Response: {response.text[:100]}"
                 
-            self.log_test("API Health Check", success, details)
+            self.log_test("API Root (Version 7.0)", success, details)
             return success
         except Exception as e:
-            self.log_test("API Health Check", False, f"Exception: {str(e)}")
+            self.log_test("API Root (Version 7.0)", False, f"Exception: {str(e)}")
+            return False
+
+    def test_health_check(self):
+        """Test GET /api/health - health check с статусами DB, LiveKit, Telegram"""
+        try:
+            response = requests.get(f"{self.api_url}/health", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                db_status = data.get('database', 'N/A')
+                livekit_status = data.get('livekit', 'N/A')
+                telegram_status = data.get('telegram', 'N/A')
+                details = f"Status: {response.status_code}, DB: {db_status}, LiveKit: {livekit_status}, Telegram: {telegram_status}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:100]}"
+                
+            self.log_test("Health Check (DB, LiveKit, Telegram)", success, details)
+            return success
+        except Exception as e:
+            self.log_test("Health Check (DB, LiveKit, Telegram)", False, f"Exception: {str(e)}")
             return False
 
     def test_club_settings(self):
