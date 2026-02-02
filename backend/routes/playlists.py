@@ -2,11 +2,11 @@
 Playlist Routes - API for managing user playlists
 """
 from fastapi import APIRouter, HTTPException, status
-from core.database import get_db, get_gridfs
 from typing import List, Optional
-from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 from uuid import uuid4
+
+from core.database import get_db
 
 router = APIRouter(prefix="/playlists", tags=["playlists"])
 

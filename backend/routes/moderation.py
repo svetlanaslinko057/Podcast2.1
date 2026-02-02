@@ -2,8 +2,8 @@
 Moderation Routes - Content moderation endpoints
 """
 from fastapi import APIRouter, Form, HTTPException
-from core.database import get_db, get_gridfs
 from typing import Optional
+
 from core.database import get_db, get_gridfs
 
 router = APIRouter(prefix="/moderation", tags=["moderation"])

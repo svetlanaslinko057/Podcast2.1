@@ -2,10 +2,10 @@
 Advanced Search Routes - Multi-filter podcast search
 """
 from fastapi import APIRouter, Query
-from core.database import get_db, get_gridfs
 from typing import Optional, List
-from core.database import get_db, get_gridfs
 from datetime import datetime, timezone, timedelta
+
+from core.database import get_db
 
 router = APIRouter(prefix="/search", tags=["search"])
 

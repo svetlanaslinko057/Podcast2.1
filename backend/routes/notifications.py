@@ -2,12 +2,11 @@
 Notifications Routes - User notifications management
 """
 from fastapi import APIRouter, HTTPException
-from core.database import get_db, get_gridfs
 from typing import Optional
-from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 import uuid
-from core.database import get_db, get_gridfs
+
+from core.database import get_db
 
 router = APIRouter(prefix="/notifications", tags=["notifications"])
 

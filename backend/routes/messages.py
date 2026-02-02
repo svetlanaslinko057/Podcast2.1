@@ -2,17 +2,13 @@
 Messages Routes - Direct messaging functionality
 """
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form
-from core.database import get_db, get_gridfs
 from typing import Optional
-from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 import uuid
-from core.database import get_db, get_gridfs
 import base64
-from core.database import get_db, get_gridfs
 
 from models import Message, Notification
-from core.database import get_db, get_gridfs
+from core.database import get_db
 
 router = APIRouter(prefix="/messages", tags=["messages"])
 
@@ -165,7 +161,6 @@ async def delete_conversation(user1_id: str, user2_id: str):
 
 # User conversations endpoint (under /users prefix)
 from fastapi import APIRouter as ConvRouter
-from core.database import get_db, get_gridfs
 
 users_router = APIRouter(prefix="/users", tags=["users"])
 
