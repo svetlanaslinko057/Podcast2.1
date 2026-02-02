@@ -3,12 +3,11 @@ Recommendations Routes
 Similar podcasts by tags, guests, and other criteria
 """
 from fastapi import APIRouter, HTTPException, Query
-from core.database import get_db, get_gridfs
 from typing import Optional, List
-from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 import logging
-from core.database import get_db, get_gridfs
+
+from core.database import get_db
 
 logger = logging.getLogger(__name__)
 
