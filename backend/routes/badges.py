@@ -324,6 +324,7 @@ async def get_user_badges(user_id: str):
     Get all badges for a user
     Auto-creates user if not found
     """
+    db = get_database()
     user = await db.users.find_one({"id": user_id})
     
     # If user not found, return empty badges (user will be created by /xp/progress endpoint)
