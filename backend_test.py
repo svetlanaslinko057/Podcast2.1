@@ -231,38 +231,46 @@ class FOMOPodcastsAPITester:
             self.log_test("LiveKit Token Generation", False, f"Exception: {str(e)}")
             return False
 
-    def test_additional_endpoints(self):
-        """Test additional important endpoints"""
-        endpoints_to_test = [
-            ("/authors", "Authors List"),
-            ("/library", "Library"),
-            ("/notifications", "Notifications"),
-            ("/analytics", "Analytics")
-        ]
-        
-        results = []
-        for endpoint, name in endpoints_to_test:
-            try:
-                response = requests.get(f"{self.api_url}{endpoint}", timeout=10)
-                success = response.status_code in [200, 404]  # 404 is acceptable for some endpoints
-                details = f"Status: {response.status_code}"
-                if response.status_code == 200:
-                    try:
-                        data = response.json()
-                        if isinstance(data, dict) and 'count' in data:
-                            details += f", Count: {data['count']}"
-                        elif isinstance(data, list):
-                            details += f", Items: {len(data)}"
-                    except:
-                        pass
+    def test_user_badges(self):
+        """Test GET /api/users/owner-001/badges - бейджи пользователя"""
+        try:
+            response = requests.get(f"{self.api_url}/users/owner-001/badges", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                total_badges = data.get('total_badges', 0)
+                user_name = data.get('user_name', 'N/A')
+                details = f"Status: {response.status_code}, User: {user_name}, Badges: {total_badges}"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:100]}"
                 
-                self.log_test(name, success, details)
-                results.append(success)
-            except Exception as e:
-                self.log_test(name, False, f"Exception: {str(e)}")
-                results.append(False)
-        
-        return all(results)
+            self.log_test("User Badges (owner-001)", success, details)
+            return success
+        except Exception as e:
+            self.log_test("User Badges (owner-001)", False, f"Exception: {str(e)}")
+            return False
+
+    def test_user_xp_progress(self):
+        """Test GET /api/xp/owner-001/progress - XP прогресс"""
+        try:
+            response = requests.get(f"{self.api_url}/xp/owner-001/progress", timeout=10)
+            success = response.status_code == 200
+            
+            if success:
+                data = response.json()
+                xp_total = data.get('xp_total', 0)
+                current_level = data.get('current_level', 0)
+                level_name = data.get('current_level_name', 'N/A')
+                details = f"Status: {response.status_code}, XP: {xp_total}, Level: {current_level} ({level_name})"
+            else:
+                details = f"Status: {response.status_code}, Response: {response.text[:100]}"
+                
+            self.log_test("User XP Progress (owner-001)", success, details)
+            return success
+        except Exception as e:
+            self.log_test("User XP Progress (owner-001)", False, f"Exception: {str(e)}")
+            return False
 
     def run_all_tests(self):
         """Run all API tests"""
