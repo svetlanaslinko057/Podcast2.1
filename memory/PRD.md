@@ -1,160 +1,183 @@
 # FOMO Voice Club - PRD (Product Requirements Document)
 
 ## Project Overview
-Private podcast platform with reputation economy, LiveKit voice rooms, and Telegram integration.
+
+**Название:** FOMO Voice Club  
+**Тип:** Приватная подкаст-платформа с репутационной экономикой  
+**GitHub:** https://github.com/ventureguro-create/FOMO-Podcasts-lw
 
 **Last Updated:** February 2, 2026
 
 ---
 
-## Architecture
+## Архитектура
 
 ### Tech Stack
-- **Frontend:** React 19 + TailwindCSS + Radix UI
-- **Backend:** FastAPI + Motor (async MongoDB driver)
-- **Database:** MongoDB
-- **Voice Rooms:** LiveKit Cloud (wss://podcast-4hfb3nr6.livekit.cloud)
-- **Messaging:** Telegram Bot (@Podcast_FOMO_bot)
+| Компонент | Технология |
+|-----------|------------|
+| Frontend | React 19 + TailwindCSS + Radix UI |
+| Backend | FastAPI + Motor (async MongoDB) |
+| Database | MongoDB |
+| Voice | LiveKit Cloud (`wss://podcast-4hfb3nr6.livekit.cloud`) |
+| Messaging | Telegram Bot (@Podcast_FOMO_bot) |
+| Audio | WaveSurfer.js |
 
-### Key Integrations
-| Integration | Status | Details |
-|-------------|--------|---------|
-| LiveKit | ✅ Active | Real tokens, 1-2 free participants |
-| Telegram Bot | ✅ Configured | @Podcast_FOMO_bot |
-| MongoDB | ✅ Active | test_database |
+### Интеграции
+| Integration | Status | Keys Location |
+|-------------|--------|---------------|
+| LiveKit | ✅ Active | `backend/.env` |
+| Telegram | ✅ Configured | `backend/.env` |
+| MongoDB | ✅ Active | `backend/.env` |
 
 ---
 
 ## User Personas
 
-### 1. Owner (Club Founder)
-- Full admin access
-- Can create/manage live sessions
-- Award badges, manage members
+### 1. Owner (Владелец)
+- Полный доступ
+- Управление админами
+- Создание Live сессий
 - Wallet: `0xOwnerWallet123456789`
 
-### 2. Admin (Moderator)
-- Can create content
-- Moderate users and sessions
-- Award participation badges
+### 2. Admin (Администратор)
+- Создание контента
+- Модерация
+- Выдача бейджей
 - Wallet: `0xAdminWallet987654321`
 
-### 3. Listener (Regular Member)
-- Listen to podcasts
-- Join live sessions
-- Earn XP through participation
-- Raise hand to speak
+### 3. Listener (Слушатель)
+- Прослушивание подкастов
+- Участие в Live
+- Накопление XP
+- Wallet: `0xListenerWallet111222333`
 
 ---
 
-## Core Requirements (Static)
+## Core Requirements
 
-### Authentication
-- Wallet-based authentication
-- Telegram OAuth integration
+### Аутентификация
+- Wallet-based auth (MetaMask/WalletConnect)
+- Telegram OAuth
 - Role-based access (owner, admin, speaker, listener)
 
-### Podcast System
-- Upload/record podcasts
-- Audio player with waveform visualization
-- Chapters, bookmarks, smart resume
-- AI features (summary, quotes, highlights)
+### Подкасты
+- Загрузка/запись
+- Аудио плеер с waveform
+- Лайки, комментарии, теги
 
 ### Live Sessions
-- LiveKit-powered voice rooms
-- Real-time chat via WebSocket
-- Hand raise queue with priority scoring
-- Session recording to Telegram channel
-- Floating player widget when minimized
+- LiveKit голосовые комнаты (1-2 участника бесплатно)
+- Telegram Voice Chat для слушателей
+- WebSocket чат
+- Hand Raise система
+- Floating Player при сворачивании
 
-### XP & Reputation
-- XP earned through activities
-- Level progression (1-5)
-- Badge system (participation, contribution, authority)
-- Leaderboard rankings
+### XP и Бейджи
+- XP за активность
+- 5 уровней прокачки
+- Автоматические и ручные бейджи
 
 ---
 
 ## What's Been Implemented
 
-### Phase 1 (Feb 2, 2026)
-- [x] Project deployment from GitHub
-- [x] Database initialization (4 users, club settings)
-- [x] LiveKit integration with real tokens
-- [x] Telegram bot configuration
-- [x] Sample podcast with real audio file
+### Фаза 1 (Feb 2, 2026) - Деплой и инициализация
+- [x] Клонирование и деплой с GitHub
+- [x] Инициализация базы (4 пользователя, Club Settings)
+- [x] LiveKit интеграция с реальными токенами
+- [x] Telegram бот конфигурация
+- [x] Тестовый подкаст с реальным аудио
+- [x] Админ панель
+- [x] Progress/XP страница
+- [x] Telegram Connect
+- [x] Live Sessions с LiveKit
 
-### Features Working
-- [x] Home page with stats (members, XP, live sessions)
-- [x] Progress page (requires wallet connection)
-- [x] Admin panel (wallets, members, club settings)
-- [x] Live Sessions management
-- [x] Live Room with chat and participants
-- [x] Podcast detail with audio player
-- [x] Telegram Connect settings
-- [x] Floating Live Player widget
-- [x] Badge system (auto-award + manual)
+### Фаза 2 (Feb 2, 2026) - Документация
+- [x] README.md
+- [x] docs/ARCHITECTURE.md
+- [x] docs/API.md
+- [x] docs/CONFIGURATION.md
+- [x] docs/ADMIN_PANEL.md
+- [x] docs/LIVE_SESSIONS.md
+- [x] docs/TELEGRAM.md
+- [x] docs/QUICK_START.md
+- [x] backend/.env.example
 
 ---
 
 ## Prioritized Backlog
 
 ### P0 (Critical)
-- [ ] Test real LiveKit voice connection end-to-end
-- [ ] Configure Telegram Recording Bot webhook
-- [ ] Test podcast save after live session ends
+- [ ] E2E тест Live Session flow
+- [ ] Recording Bot запуск как сервис
+- [ ] Wallet connect интеграция
 
 ### P1 (Important)
-- [ ] Add more sample podcasts with real audio
-- [ ] Implement wallet connection flow fully
-- [ ] Test XP award during live participation
+- [ ] Больше тестовых подкастов
+- [ ] AI summary (интеграция OpenAI)
+- [ ] Push notifications
 
 ### P2 (Nice to have)
-- [ ] AI summary generation with OpenAI
-- [ ] Push notifications setup
-- [ ] RSS feed generation
-- [ ] Multi-language support
+- [ ] RSS feed
+- [ ] Мультиязычность
+- [ ] Mobile app
 
 ---
 
 ## Next Tasks
 
-1. **Recording Bot Setup**
-   - Start telegram_recording_bot.py as service
-   - Configure webhook for Telegram channel monitoring
-   - Auto-create podcasts from recordings
+1. **E2E тестирование:**
+   - Создать Live Session
+   - Присоединиться как speaker
+   - Завершить и проверить сохранение
 
-2. **Wallet Integration**
-   - Connect MetaMask/WalletConnect
-   - Map wallets to user roles
+2. **Recording Bot:**
+   - Добавить в supervisor
+   - Настроить webhook
 
-3. **Full E2E Testing**
-   - Start live session
-   - Join as speaker
-   - Record audio via LiveKit
-   - End session
-   - Verify podcast created
+3. **Production:**
+   - Заменить тестовые кошельки
+   - Настроить HTTPS
+   - MongoDB Atlas
 
 ---
 
-## Configuration
+## Документация
 
-### Environment Variables
+| Документ | Путь | Описание |
+|----------|------|----------|
+| README | `/README.md` | Главный файл |
+| Архитектура | `/docs/ARCHITECTURE.md` | Структура проекта |
+| API | `/docs/API.md` | Все эндпоинты |
+| Конфиг | `/docs/CONFIGURATION.md` | Где ключи, как получить |
+| Админка | `/docs/ADMIN_PANEL.md` | Описание админ панели |
+| Live | `/docs/LIVE_SESSIONS.md` | Live сессии + LiveKit |
+| Telegram | `/docs/TELEGRAM.md` | Боты, каналы, OAuth |
+| Quick Start | `/docs/QUICK_START.md` | Быстрый запуск |
+| .env example | `/backend/.env.example` | Шаблон конфига |
+
+---
+
+## Ключи и конфигурация
+
+### LiveKit
 ```
-# Backend (.env)
-MONGO_URL=mongodb://localhost:27017
-DB_NAME=test_database
-TELEGRAM_BOT_TOKEN=8293451127:AAEVo5vQV_vJqoziVTDKHYJiOYUZQN-2M2E
-LIVEKIT_API_KEY=APIWrnERKLL3FHq
-LIVEKIT_API_SECRET=lyFL5ewBGB2FK2iOizIjenTYeM9lgBAXHIAlEA99eNBC
-LIVEKIT_URL=wss://podcast-4hfb3nr6.livekit.cloud
-
-# Frontend (.env)
-REACT_APP_BACKEND_URL=https://fomo-podcasts-1.preview.emergentagent.com
-REACT_APP_LIVEKIT_URL=wss://podcast-4hfb3nr6.livekit.cloud
+API Key: APIWrnERKLL3FHq
+API Secret: lyFL5ewBGB2FK2iOizIjenTYeM9lgBAXHIAlEA99eNBC
+URL: wss://podcast-4hfb3nr6.livekit.cloud
 ```
 
-### Test Wallets
-- Owner: `0xOwnerWallet123456789`
-- Admin: `0xAdminWallet987654321`
-- Listener: `0xListenerWallet111222333`
+### Telegram
+```
+Bot Token: 8293451127:AAEVo5vQV_vJqoziVTDKHYJiOYUZQN-2M2E
+Bot Username: Podcast_FOMO_bot
+Notifications Channel: @P_FOMO (-1002475795498)
+Recording Channel: @Podcast_F (-1003133850361)
+```
+
+### Тестовые кошельки
+```
+Owner: 0xOwnerWallet123456789
+Admin: 0xAdminWallet987654321
+Listener: 0xListenerWallet111222333
+```
