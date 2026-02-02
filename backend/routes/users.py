@@ -30,6 +30,7 @@ def get_database():
 
 async def check_admin_permission(user_id: str) -> bool:
     """Check if user is admin or owner"""
+    db = get_database()
     user = await db.users.find_one({"id": user_id})
     if not user:
         return False
