@@ -1,5 +1,6 @@
 """
 Podcasts Routes - Podcast management endpoints
+Migrated to use core.database
 """
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from fastapi.responses import StreamingResponse
@@ -9,20 +10,9 @@ from datetime import datetime, timezone
 import io
 
 from models import Podcast, PodcastCreate
+from core.database import get_db, get_gridfs
 
 router = APIRouter(prefix="/podcasts", tags=["podcasts"])
-
-
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
-
-
-async def get_fs():
-    """Get GridFS instance"""
-    from server import fs
-    return fs
 
 
 @router.post("", response_model=Podcast)
