@@ -13,6 +13,7 @@ from models import (
     XPAward,
     LeaderboardEntry
 )
+from core.database import get_db
 
 router = APIRouter(tags=["xp"])
 logger = logging.getLogger(__name__)
@@ -23,6 +24,13 @@ db: Optional[AsyncIOMotorDatabase] = None
 def set_db(database: AsyncIOMotorDatabase):
     global db
     db = database
+
+def get_database():
+    """Get database instance"""
+    global db
+    if db is None:
+        db = get_db()
+    return db
 
 
 # Level Thresholds
