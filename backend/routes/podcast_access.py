@@ -3,10 +3,13 @@ Private Podcast Access Routes
 Manage access control for private podcasts (closed clubs)
 """
 from fastapi import APIRouter, HTTPException, status
+from core.database import get_db, get_gridfs
 from typing import List
+from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 
 from models import (
+from core.database import get_db, get_gridfs
     PodcastAccessList, PodcastAccessMember, PodcastAccessRequest,
     InviteUserRequest, RemoveUserRequest
 )
@@ -14,10 +17,6 @@ from models import (
 router = APIRouter(prefix="/podcasts", tags=["private-access"])
 
 
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
 
 
 # ========== Helper Functions ==========

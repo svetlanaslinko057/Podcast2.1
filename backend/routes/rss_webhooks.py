@@ -2,20 +2,19 @@
 RSS & Webhooks Routes
 """
 from fastapi import APIRouter, HTTPException, Query, Response
+from core.database import get_db, get_gridfs
 from typing import List
+from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 
 from models import Webhook, WebhookCreate, WebhookUpdate
+from core.database import get_db, get_gridfs
 from rss_generator import generate_author_rss_feed, generate_podcast_rss_feed, get_base_url_from_env
 from webhook_service import WEBHOOK_EVENTS
 
 router = APIRouter(tags=["rss-webhooks"])
 
 
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
 
 
 async def get_webhook_service():

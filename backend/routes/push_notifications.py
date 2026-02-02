@@ -3,19 +3,19 @@ Web Push Notifications Routes
 Browser-based push notifications using Web Push API
 """
 from fastapi import APIRouter, HTTPException, status
+from core.database import get_db, get_gridfs
 from typing import Optional, List
+from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 from uuid import uuid4
 import json
+from core.database import get_db, get_gridfs
 import os
+from core.database import get_db, get_gridfs
 
 router = APIRouter(prefix="/push", tags=["push-notifications"])
 
 
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
 
 
 # VAPID keys should be generated once and stored

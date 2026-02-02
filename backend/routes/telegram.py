@@ -3,10 +3,15 @@ Telegram Routes - Testing and integration
 Includes OAuth callback for Telegram Login Widget
 """
 from fastapi import APIRouter, Form, HTTPException
+from core.database import get_db, get_gridfs
 from typing import List, Optional
+from core.database import get_db, get_gridfs
 import os
+from core.database import get_db, get_gridfs
 import logging
+from core.database import get_db, get_gridfs
 from models import TelegramConnection
+from core.database import get_db, get_gridfs
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +22,6 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8293451127:AAEVo5vQV_vJqoz
 TELEGRAM_BOT_USERNAME = "Podcast_FOMO_bot"
 
 
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
 
 
 async def get_telegram_service():

@@ -3,19 +3,18 @@ Recommendations Routes
 Similar podcasts by tags, guests, and other criteria
 """
 from fastapi import APIRouter, HTTPException, Query
+from core.database import get_db, get_gridfs
 from typing import Optional, List
+from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 import logging
+from core.database import get_db, get_gridfs
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/recommendations", tags=["recommendations"])
 
 
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
 
 
 @router.get("/similar-by-tags/{podcast_id}")

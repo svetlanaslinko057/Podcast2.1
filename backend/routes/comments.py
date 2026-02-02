@@ -2,9 +2,13 @@
 Comments Routes - Handle podcast comments, replies, reactions and discussions
 """
 from fastapi import APIRouter, HTTPException, Form, Body
+from core.database import get_db, get_gridfs
 from typing import Optional, List
+from core.database import get_db, get_gridfs
 from pydantic import BaseModel
+from core.database import get_db, get_gridfs
 import uuid
+from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 
 router = APIRouter(prefix="/podcasts", tags=["comments"])
@@ -25,10 +29,6 @@ class ReactionAdd(BaseModel):
     emoji: str  # The emoji/reaction type
 
 
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
 
 
 def build_comment_tree(comments: List[dict]) -> List[dict]:

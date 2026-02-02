@@ -2,10 +2,14 @@
 Analytics Routes - Advanced podcast analytics and tracking
 """
 from fastapi import APIRouter, HTTPException, Form
+from core.database import get_db, get_gridfs
 from typing import Optional
+from core.database import get_db, get_gridfs
 from datetime import datetime, timezone, timedelta
 import uuid
+from core.database import get_db, get_gridfs
 import json
+from core.database import get_db, get_gridfs
 
 router = APIRouter(prefix="/analytics", tags=["analytics"])
 
@@ -14,10 +18,6 @@ analytics_cache = {}
 CACHE_TTL = 300  # 5 minutes
 
 
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
 
 
 def get_cache_key(podcast_id: str, endpoint: str) -> str:

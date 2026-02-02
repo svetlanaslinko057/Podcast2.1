@@ -2,16 +2,14 @@
 Library Routes - Save/Like functionality
 """
 from fastapi import APIRouter, Form, HTTPException
+from core.database import get_db, get_gridfs
 import uuid
+from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 
 router = APIRouter(prefix="/library", tags=["library"])
 
 
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
 
 
 @router.post("/save")

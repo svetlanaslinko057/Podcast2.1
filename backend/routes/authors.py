@@ -2,20 +2,20 @@
 Authors Routes - User/Author management endpoints
 """
 from fastapi import APIRouter, Form, HTTPException
+from core.database import get_db, get_gridfs
 from typing import Optional
+from core.database import get_db, get_gridfs
 import uuid
+from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 
 from models import Author, AuthorCreate, AuthorUpdate, Subscription, Notification
+from core.database import get_db, get_gridfs
 from rating_calculator import calculate_author_rating, update_author_metrics
 
 router = APIRouter(prefix="/authors", tags=["authors"])
 
 
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
 
 
 @router.post("", response_model=Author)

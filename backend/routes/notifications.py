@@ -2,17 +2,16 @@
 Notifications Routes - User notifications management
 """
 from fastapi import APIRouter, HTTPException
+from core.database import get_db, get_gridfs
 from typing import Optional
+from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 import uuid
+from core.database import get_db, get_gridfs
 
 router = APIRouter(prefix="/notifications", tags=["notifications"])
 
 
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
 
 
 @router.get("/{user_id}")

@@ -3,16 +3,15 @@ Co-Streaming API Routes
 Endpoints for managing simultaneous streaming to platform and Telegram
 """
 from fastapi import APIRouter, HTTPException, Form
+from core.database import get_db, get_gridfs
 from typing import Optional, List
+from core.database import get_db, get_gridfs
 from pydantic import BaseModel
+from core.database import get_db, get_gridfs
 
 router = APIRouter(prefix="/costream", tags=["costream"])
 
 
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
 
 
 async def get_costream_service():

@@ -5,20 +5,20 @@ Subscribe users to notifications via Telegram for:
 - Live streams from followed creators
 """
 from fastapi import APIRouter, HTTPException, Form
+from core.database import get_db, get_gridfs
 from typing import Optional, List
+from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 import uuid
+from core.database import get_db, get_gridfs
 import logging
+from core.database import get_db, get_gridfs
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/telegram-subscriptions", tags=["telegram-subscriptions"])
 
 
-async def get_db():
-    """Get database instance"""
-    from server import db
-    return db
 
 
 async def get_telegram_service():
