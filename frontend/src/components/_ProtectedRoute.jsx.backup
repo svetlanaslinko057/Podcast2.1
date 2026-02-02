@@ -1,0 +1,82 @@
+import React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
+/**
+ * ProtectedRoute component - Wraps routes that require authentication
+ * Redirects to /auth if user is not authenticated
+ */
+export const ProtectedRoute = ({ children, requiredRole = null }) => {
+  const { isAuthenticated, loading, user } = useAuth();
+  const location = useLocation();
+
+  // Show nothing while checking auth status
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to auth if not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  // Check role if required
+  if (requiredRole) {
+    const userRole = user?.role || 'user';
+    const roleHierarchy = ['user', 'creator', 'moderator', 'admin'];
+    const userRoleLevel = roleHierarchy.indexOf(userRole);
+    const requiredRoleLevel = roleHierarchy.indexOf(requiredRole);
+
+    if (userRoleLevel < requiredRoleLevel) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center max-w-md mx-auto p-8">
+            <div className="text-6xl mb-4">🔒</div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
+            <p className="text-gray-600 mb-6">
+              You don't have permission to access this page. 
+              Required role: <span className="font-semibold">{requiredRole}</span>
+            </p>
+            <button
+              onClick={() => window.history.back()}
+              className="px-6 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+      );
+    }
+  }
+
+  // User is authenticated and has required role (if any)
+  return children;
+};
+
+/**
+ * CreatorRoute - Shortcut for creator-only routes
+ */
+export const CreatorRoute = ({ children }) => {
+  return <ProtectedRoute requiredRole="creator">{children}</ProtectedRoute>;
+};
+
+/**
+ * ModeratorRoute - Shortcut for moderator-only routes
+ */
+export const ModeratorRoute = ({ children }) => {
+  return <ProtectedRoute requiredRole="moderator">{children}</ProtectedRoute>;
+};
+
+/**
+ * AdminRoute - Shortcut for admin-only routes
+ */
+export const AdminRoute = ({ children }) => {
+  return <ProtectedRoute requiredRole="admin">{children}</ProtectedRoute>;
+};

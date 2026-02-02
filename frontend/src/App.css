@@ -1,34 +1,211 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+.App {
+  min-height: 100vh;
+  background: #FFFFFF;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+/* Mini Player */
+.mini-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid #e5e7eb;
+  padding: 1rem;
+  transition: transform 0.3s ease;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.mini-player.hidden {
+  transform: translateY(100%);
 }
 
-.App-link {
-    color: #61dafb;
+/* Waveform */
+.waveform-container {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  background: #f9fafb;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+/* Podcast Card */
+.podcast-card {
+  background: #FFFFFF;
+  border: 1px solid #e5e7eb;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.podcast-card:hover {
+  border-color: #10b981;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Stat Badge */
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 1px solid #10b981;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #059669;
+  transition: all 0.3s ease;
+}
+
+.stat-badge:hover {
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Live Indicator */
+.live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border: 1px solid #fecaca;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.live-indicator span {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Glass Card */
+.glass-card {
+  background: #FFFFFF;
+  border: 1px solid #e5e7eb;
+  border-radius: 1.5rem;
+}
+
+/* NFT Badge */
+.nft-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border: 1px solid #10b981;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #059669;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Token Gate Lock */
+.token-gate-lock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.98);
+  padding: 2rem;
+  border-radius: 1.5rem;
+  border: 2px solid #10b981;
+  text-align: center;
+  z-index: 10;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Primary Button (FOMO style) */
+.fomo-button {
+  background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+  color: #FFFFFF;
+  font-weight: 600;
+  border: none;
+  border-radius: 1rem;
+  padding: 1rem 2rem;
+  transition: all 0.3s ease;
+}
+
+.fomo-button:hover {
+  background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Secondary Button */
+.fomo-button-secondary {
+  background: #FFFFFF;
+  color: #10b981;
+  font-weight: 600;
+  border: 2px solid #10b981;
+  border-radius: 1rem;
+  padding: 1rem 2rem;
+  transition: all 0.3s ease;
+}
+
+.fomo-button-secondary:hover {
+  background: #ecfdf5;
+  border-color: #059669;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.2);
+}
+
+/* Gradient Button */
+.fomo-button-gradient {
+  background: linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%);
+  color: #FFFFFF;
+  font-weight: 600;
+  border: none;
+  border-radius: 1rem;
+  padding: 1rem 2rem;
+  transition: all 0.3s ease;
+}
+
+.fomo-button-gradient:hover {
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Embed Code */
+
+/* Status pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(20, 184, 166, 0.2) 100%);
+  border-radius: 9999px;
+  border: 2px solid rgba(16, 185, 129, 0.4);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #10b981;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+}
+
+.status-pill-active::before {
+  content: '';
+  width: 0.625rem;
+  height: 0.625rem;
+  background: #10b981;
+  border-radius: 9999px;
+  animation: pulse-dot 2s infinite;
+  box-shadow: 0 0 10px #10b981;
 }

@@ -1,0 +1,487 @@
+import React, { useState, useEffect } from 'react';
+import { Card } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Badge } from '../components/ui/badge';
+import { 
+  Plus, Trash2, Copy, RefreshCw, BarChart3, 
+  Eye, EyeOff, Link2, Rss, Calendar, Activity
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
+
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+
+export const PrivateRSSManager = () => {
+  const { user } = useAuth();
+  const [tokens, setTokens] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [selectedToken, setSelectedToken] = useState(null);
+  const [stats, setStats] = useState(null);
+
+  // Create token form
+  const [createForm, setCreateForm] = useState({
+    name: '',
+    feed_type: 'author',
+    author_id: '',
+    podcast_id: '',
+    max_items: 100,
+    allow_public_podcasts_only: false
+  });
+
+  useEffect(() => {
+    loadTokens();
+    loadAnalytics();
+  }, []);
+
+  const loadTokens = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await axios.get(`${API}/private-rss/tokens`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setTokens(response.data);
+    } catch (error) {
+      toast.error('Failed to load RSS tokens');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadAnalytics = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await axios.get(`${API}/private-rss/analytics?days=30`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setStats(response.data);
+    } catch (error) {
+      console.error('Failed to load analytics:', error);
+    }
+  };
+
+  const createToken = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await axios.post(
+        `${API}/private-rss/tokens`,
+        {
+          ...createForm,
+          user_id: user.id,
+          author_id: createForm.feed_type === 'author' ? user.id : null,
+          podcast_id: createForm.feed_type === 'podcast' ? createForm.podcast_id : null
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      toast.success('RSS token created successfully!');
+      setTokens([response.data, ...tokens]);
+      setShowCreateDialog(false);
+      setCreateForm({
+        name: '',
+        feed_type: 'author',
+        author_id: '',
+        podcast_id: '',
+        max_items: 100,
+        allow_public_podcasts_only: false
+      });
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Failed to create token');
+    }
+  };
+
+  const copyFeedUrl = (tokenValue) => {
+    const url = `${process.env.REACT_APP_BACKEND_URL}/api/private-rss/feed?token=${tokenValue}`;
+    navigator.clipboard.writeText(url);
+    toast.success('RSS feed URL copied to clipboard!');
+  };
+
+  const regenerateToken = async (tokenId) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await axios.post(
+        `${API}/private-rss/tokens/${tokenId}/regenerate`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      toast.success('Token regenerated! Old URL is now invalid.');
+      loadTokens();
+      copyFeedUrl(response.data.token);
+    } catch (error) {
+      toast.error('Failed to regenerate token');
+    }
+  };
+
+  const toggleTokenStatus = async (tokenId, currentStatus) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      await axios.patch(
+        `${API}/private-rss/tokens/${tokenId}`,
+        { is_active: !currentStatus },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      toast.success(currentStatus ? 'Token disabled' : 'Token enabled');
+      loadTokens();
+    } catch (error) {
+      toast.error('Failed to update token');
+    }
+  };
+
+  const deleteToken = async (tokenId) => {
+    if (!confirm('Are you sure? This will invalidate the RSS feed URL.')) return;
+
+    try {
+      const token = localStorage.getItem('access_token');
+      await axios.delete(`${API}/private-rss/tokens/${tokenId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      toast.success('Token deleted successfully');
+      setTokens(tokens.filter(t => t.id !== tokenId));
+    } catch (error) {
+      toast.error('Failed to delete token');
+    }
+  };
+
+  const viewStats = async (tokenId) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const response = await axios.get(`${API}/private-rss/tokens/${tokenId}/stats?days=30`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSelectedToken({ ...tokens.find(t => t.id === tokenId), stats: response.data });
+    } catch (error) {
+      toast.error('Failed to load stats');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading RSS tokens...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-5xl mx-auto">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Private RSS Feeds</h1>
+        <p className="text-gray-600">
+          Generate secure RSS feed URLs for podcast apps like Apple Podcasts, Spotify, Overcast, etc.
+        </p>
+      </div>
+
+      {/* Analytics Summary */}
+      {stats && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-emerald-100 rounded-lg">
+                <Rss className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Active Tokens</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.active_tokens}</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Activity className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Total Accesses</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.total_accesses}</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <BarChart3 className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Period</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.period_days}d</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-orange-100 rounded-lg">
+                <Calendar className="w-5 h-5 text-orange-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Total Tokens</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.total_tokens}</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Create Button */}
+      <div className="mb-6">
+        <Button onClick={() => setShowCreateDialog(!showCreateDialog)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Create New RSS Token
+        </Button>
+      </div>
+
+      {/* Create Dialog */}
+      {showCreateDialog && (
+        <Card className="p-6 mb-6 border-2 border-emerald-200">
+          <h3 className="text-lg font-bold text-gray-900 mb-4">Create RSS Token</h3>
+
+          <div className="space-y-4">
+            <div>
+              <Label>Token Name</Label>
+              <Input
+                placeholder="e.g., Apple Podcasts, Spotify"
+                value={createForm.name}
+                onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Friendly name to identify where you'll use this token
+              </p>
+            </div>
+
+            <div>
+              <Label>Feed Type</Label>
+              <select
+                className="w-full px-3 py-2 border rounded-lg"
+                value={createForm.feed_type}
+                onChange={(e) => setCreateForm({ ...createForm, feed_type: e.target.value })}
+              >
+                <option value="author">All My Podcasts (Author Feed)</option>
+                <option value="podcast">Single Podcast</option>
+              </select>
+            </div>
+
+            {createForm.feed_type === 'podcast' && (
+              <div>
+                <Label>Podcast ID</Label>
+                <Input
+                  placeholder="Enter podcast ID"
+                  value={createForm.podcast_id}
+                  onChange={(e) => setCreateForm({ ...createForm, podcast_id: e.target.value })}
+                />
+              </div>
+            )}
+
+            <div>
+              <Label>Max Items</Label>
+              <Input
+                type="number"
+                min="1"
+                max="500"
+                value={createForm.max_items}
+                onChange={(e) => setCreateForm({ ...createForm, max_items: parseInt(e.target.value) })}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Maximum number of episodes in the feed
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="public-only"
+                checked={createForm.allow_public_podcasts_only}
+                onChange={(e) => setCreateForm({ ...createForm, allow_public_podcasts_only: e.target.checked })}
+                className="rounded"
+              />
+              <Label htmlFor="public-only" className="cursor-pointer">
+                Show public podcasts only
+              </Label>
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button onClick={createToken} disabled={!createForm.name}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create Token
+              </Button>
+              <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Tokens List */}
+      <div className="space-y-4">
+        {tokens.length === 0 ? (
+          <Card className="p-8 text-center">
+            <Rss className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No RSS Tokens Yet</h3>
+            <p className="text-gray-600 mb-4">
+              Create your first private RSS feed token to share your podcasts securely.
+            </p>
+            <Button onClick={() => setShowCreateDialog(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Create First Token
+            </Button>
+          </Card>
+        ) : (
+          tokens.map((token) => (
+            <Card key={token.id} className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <h3 className="text-lg font-bold text-gray-900">{token.name}</h3>
+                    <Badge variant={token.is_active ? 'success' : 'secondary'}>
+                      {token.is_active ? 'Active' : 'Disabled'}
+                    </Badge>
+                    <Badge variant="outline">{token.feed_type}</Badge>
+                  </div>
+
+                  <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+                    <span>🎧 {token.access_count} accesses</span>
+                    <span>📦 Max {token.max_items} items</span>
+                    {token.last_accessed_at && (
+                      <span>🕒 Last: {new Date(token.last_accessed_at).toLocaleDateString()}</span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                    <code className="text-sm text-gray-700 flex-1 truncate">
+                      {`${process.env.REACT_APP_BACKEND_URL}/api/private-rss/feed?token=${token.token}`}
+                    </code>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => copyFeedUrl(token.token)}
+                      title="Copy URL"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => viewStats(token.id)}
+                >
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Stats
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => regenerateToken(token.id)}
+                >
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Regenerate
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => toggleTokenStatus(token.id, token.is_active)}
+                >
+                  {token.is_active ? (
+                    <>
+                      <EyeOff className="w-4 h-4 mr-2" />
+                      Disable
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="w-4 h-4 mr-2" />
+                      Enable
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={() => deleteToken(token.id)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete
+                </Button>
+              </div>
+            </Card>
+          ))
+        )}
+      </div>
+
+      {/* Stats Modal */}
+      {selectedToken?.stats && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setSelectedToken(null)}
+        >
+          <Card
+            className="max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                {selectedToken.name} - Statistics
+              </h2>
+
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600">Total Accesses</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {selectedToken.stats.total_accesses}
+                  </p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600">Unique IPs</p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {selectedToken.stats.unique_ips}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="font-semibold text-gray-900 mb-3">Podcast Apps</h3>
+                <div className="space-y-2">
+                  {Object.entries(selectedToken.stats.user_agent_distribution).map(
+                    ([app, count]) => (
+                      <div key={app} className="flex items-center justify-between">
+                        <span className="text-gray-700">{app}</span>
+                        <Badge>{count} accesses</Badge>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+
+              <Button onClick={() => setSelectedToken(null)} className="w-full">
+                Close
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+};

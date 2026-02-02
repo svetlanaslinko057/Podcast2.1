@@ -1,0 +1,124 @@
+import React, { useEffect } from 'react';
+import { Send } from 'lucide-react';
+import { toast } from 'sonner';
+
+/**
+ * Telegram Login Widget Component
+ * Based on: https://core.telegram.org/widgets/login
+ * 
+ * Setup Instructions:
+ * 1. Create bot with @BotFather
+ * 2. Set domain with /setdomain command
+ * 3. Add bot token to backend .env as TELEGRAM_BOT_TOKEN
+ */
+export const TelegramLoginWidget = ({ onAuth, botName = 'your_bot' }) => {
+  const widgetRef = React.useRef(null);
+
+  useEffect(() => {
+    // Load Telegram Widget script
+    const script = document.createElement('script');
+    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+    script.setAttribute('data-telegram-login', botName);
+    script.setAttribute('data-size', 'large');
+    script.setAttribute('data-radius', '8');
+    script.setAttribute('data-request-access', 'write');
+    script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+    script.async = true;
+
+    // Setup global callback
+    window.onTelegramAuth = (user) => {
+      console.log('Telegram auth:', user);
+      if (onAuth) {
+        onAuth(user);
+      }
+    };
+
+    if (widgetRef.current) {
+      widgetRef.current.appendChild(script);
+    }
+
+    return () => {
+      // Cleanup
+      delete window.onTelegramAuth;
+      if (widgetRef.current && script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, [botName, onAuth]);
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <div ref={widgetRef} className="flex justify-center min-h-[48px]" />
+      <p className="text-xs text-gray-500 text-center max-w-xs">
+        Click above to login with your Telegram account
+      </p>
+    </div>
+  );
+};
+
+/**
+ * Manual Telegram Login Button (fallback)
+ * Use this if you don't have bot configured yet
+ */
+export const TelegramLoginButton = ({ onAuth, disabled = false }) => {
+  const handleClick = () => {
+    toast.info('Telegram Login Widget requires bot configuration', {
+      description: 'Please configure TELEGRAM_BOT_TOKEN in backend .env'
+    });
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={disabled}
+      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#0088cc] text-white rounded-lg hover:bg-[#0077b5] transition disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      <Send className="w-5 h-5" />
+      <span className="font-medium">Continue with Telegram</span>
+    </button>
+  );
+};
+
+/**
+ * Hook for Telegram Login
+ */
+export const useTelegramLogin = () => {
+  const handleTelegramAuth = async (telegramUser, apiUrl) => {
+    try {
+      const response = await fetch(`${apiUrl}/auth/telegram-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          telegram_id: telegramUser.id.toString(),
+          telegram_username: telegramUser.username,
+          first_name: telegramUser.first_name,
+          last_name: telegramUser.last_name,
+          photo_url: telegramUser.photo_url,
+          auth_date: telegramUser.auth_date,
+          hash: telegramUser.hash,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.detail || 'Telegram login failed');
+      }
+
+      const data = await response.json();
+      
+      // Save tokens
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('refresh_token', data.refresh_token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+
+      return { success: true, user: data.user };
+    } catch (error) {
+      console.error('Telegram login error:', error);
+      return { success: false, error: error.message };
+    }
+  };
+
+  return { handleTelegramAuth };
+};
