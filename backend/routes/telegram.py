@@ -3,15 +3,12 @@ Telegram Routes - Testing and integration
 Includes OAuth callback for Telegram Login Widget
 """
 from fastapi import APIRouter, Form, HTTPException
-from core.database import get_db, get_gridfs
 from typing import List, Optional
-from core.database import get_db, get_gridfs
 import os
-from core.database import get_db, get_gridfs
 import logging
-from core.database import get_db, get_gridfs
+
 from models import TelegramConnection
-from core.database import get_db, get_gridfs
+from core.database import get_db
 
 logger = logging.getLogger(__name__)
 

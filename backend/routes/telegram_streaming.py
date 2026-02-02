@@ -3,14 +3,12 @@ Telegram Channel Streaming Integration
 Allows users to connect their Telegram channels and auto-start live streams
 """
 from fastapi import APIRouter, HTTPException, Form
-from core.database import get_db, get_gridfs
 from typing import Optional, List
-from core.database import get_db, get_gridfs
 import uuid
-from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 import logging
-from core.database import get_db, get_gridfs
+
+from core.database import get_db
 
 router = APIRouter(prefix="/telegram-streaming", tags=["telegram-streaming"])
 

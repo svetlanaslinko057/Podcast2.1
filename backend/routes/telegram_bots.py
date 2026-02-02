@@ -3,13 +3,11 @@ Telegram Bots Management Routes
 Quick access bot configuration for creators
 """
 from fastapi import APIRouter, HTTPException
-from core.database import get_db, get_gridfs
 from typing import List
-from core.database import get_db, get_gridfs
 from datetime import datetime, timezone
 
 from models import TelegramBotConfig, TelegramBotCreate, TelegramBotUpdate
-from core.database import get_db, get_gridfs
+from core.database import get_db
 
 router = APIRouter(prefix="/telegram-bots", tags=["telegram-bots"])
 
