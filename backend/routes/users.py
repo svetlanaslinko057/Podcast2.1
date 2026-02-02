@@ -53,6 +53,7 @@ async def get_users(
     - limit: Max results (default 100)
     - skip: Skip results (pagination)
     """
+    db = get_database()
     query = {}
     
     if role:
@@ -74,6 +75,7 @@ async def get_user(user_id: str):
     """
     Get user by ID
     """
+    db = get_database()
     user = await db.users.find_one({"id": user_id})
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
