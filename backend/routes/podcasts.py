@@ -91,16 +91,27 @@ async def get_podcasts(
 
 @router.get("/{podcast_id}")
 async def get_podcast(podcast_id: str):
-    """Get podcast by ID"""
+    """Get podcast by ID or slug"""
     db = await get_db()
     
+    # Try to find by ID first
     podcast = await db.podcasts.find_one({"id": podcast_id}, {"_id": 0})
+    
+    # If not found, try by slug (title converted to lowercase with dashes)
+    if not podcast:
+        # Convert slug back to possible title variations
+        possible_title = podcast_id.replace("-", " ").title()
+        podcast = await db.podcasts.find_one(
+            {"title": {"$regex": f"^{possible_title}$", "$options": "i"}}, 
+            {"_id": 0}
+        )
+    
     if not podcast:
         raise HTTPException(status_code=404, detail="Podcast not found")
     
     # Increment views
     await db.podcasts.update_one(
-        {"id": podcast_id},
+        {"id": podcast.get("id", podcast_id)},
         {"$inc": {"views_count": 1}}
     )
     
