@@ -79,7 +79,10 @@ class FOMOPodcastsAPITester:
             
             if success:
                 data = response.json()
-                podcasts_count = len(data.get('podcasts', []))
+                if isinstance(data, list):
+                    podcasts_count = len(data)
+                else:
+                    podcasts_count = len(data.get('podcasts', []))
                 details = f"Status: {response.status_code}, Podcasts count: {podcasts_count}"
             else:
                 details = f"Status: {response.status_code}, Response: {response.text[:100]}"
