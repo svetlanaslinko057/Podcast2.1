@@ -50,6 +50,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Mount static files for audio
+static_dir = ROOT_DIR / "static"
+static_dir.mkdir(exist_ok=True)
+app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
 # Import routes
 from routes.authors import router as authors_router
 from routes.podcasts import router as podcasts_router
